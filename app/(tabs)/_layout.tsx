@@ -1,13 +1,17 @@
+// TO DO: looking at the app's nav bar, we can see that the icons shown don't match their respective pages.
+// currently, we are using the FontAwesome icon pack, part of the @expo/vector-icons bundle. 
+
 import React from 'react';
+// don't forget the import statement 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
+// you can explore the built-in icon families and icons at https://icons.expo.fyi/
+// replace FontAwesome with the icon family you'd like to use. 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
@@ -15,6 +19,7 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
+// change the icons here!
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -27,31 +32,24 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="index"
+        name="discover"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: 'Discover',
+          tabBarIcon: ({ color }) => <TabBarIcon name="glass" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="matches"
         options={{
-          title: 'Tab Two',
+          title: 'Matches',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcon name="signal" color={color} />,
         }}
       />
     </Tabs>
