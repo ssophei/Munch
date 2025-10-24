@@ -1,12 +1,17 @@
 import { Text, View } from "react-native";
-import FoodCard from "@/components/FoodCard";
+import RestaurantCard from "@/components/RestaurantCard"; 
  
-// TO DO: edit the foodcard component here so that it uses all of the props you've added
-// note: you can hardcode sample data rn until backend gets set up 
+// TODO: make sure to use the props you added in RestaurantCard.tsx in the example component below
+// this is where you can test your changes! 
 export default function DiscoverScreen() {
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <FoodCard name = "this text has been hardcoded"/>
+      <Text className="text-xl font-bold text-blue-500">
+      this is the page where users swipe!
+      </Text>
+    <RestaurantCard name = "example restaurant name">
+    </RestaurantCard>
     </View>
   );
 }
+
