@@ -1,12 +1,12 @@
 import { View, Text, Image } from 'react-native';
 
-type RestaurantCardProps = {
+export interface RestaurantCardProps {
   name: string;
   // TODO: what other props would this component need to take in? 
   // think about what relevant information should be displayed (ie. images, rating, price)
 };
 
-export default function RestaurantCard({ name}: RestaurantCardProps) {
+export default function RestaurantCard({ name }: RestaurantCardProps) {
   return (
     // TODO: use your new props to display additional information 
     // BONUS TODO: use tailwind classes (look through documentation) to adjust styling
