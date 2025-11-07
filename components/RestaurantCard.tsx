@@ -1,4 +1,5 @@
 import { View, Text, Image } from 'react-native';
+import HeartButton from "@/components/HeartButton";
 
 type RestaurantCardProps = {
   name: string;
@@ -7,13 +8,15 @@ type RestaurantCardProps = {
 };
 
 export default function RestaurantCard({ name}: RestaurantCardProps) {
+
   return (
     // TODO: use your new props to display additional information 
     // BONUS TODO: use tailwind classes (look through documentation) to adjust styling
-    <View className="bg-white rounded-2xl shadow-md overflow-hidden">
-      <View className="p-4 text-blue-500">
+    <View className= "bg-white rounded-2xl flex-row items-center justify-center h-64 w-64">
         <Text>{name}</Text>
-      </View>
+        <HeartButton 
+          restaurant={{ name }}
+        />
     </View>
   );
 }
