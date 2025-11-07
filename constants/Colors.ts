@@ -1,10 +1,12 @@
-const tintColorLight = '#461220';
+// TODO: Reference the Figma file and change the background and tint colors to match! 
+
+const tintColorLight = '#3e32a8';
 const tintColorDark = '#fff';
 
 export default {
   light: {
     text: '#000',
-    background: '#FED0BB',
+    background: '#3292a8',
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
