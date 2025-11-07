@@ -13,7 +13,8 @@ export default function HeartButton({ restaurant }: HeartButtonProps) {
 // this will be useful for handlePress!
   const [liked, setLiked] = useState(false);
 
-// TODO: implement handlePress
+// TODO: implement handlePress. make sure that when the heart is liked and unliked,
+//  a message containing the restaurant's name is logged in console.
 //   const handlePress = () => {
 //   };
 
