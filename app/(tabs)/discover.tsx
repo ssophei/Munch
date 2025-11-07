@@ -9,7 +9,7 @@ export default function DiscoverScreen() {
       <Text className="text-xl font-bold text-blue-500">
       this is the page where users swipe!
       </Text>
-    <RestaurantCard name = "example restaurant name">
+    <RestaurantCard name="example restaurant name">
     </RestaurantCard>
     </View>
   );
