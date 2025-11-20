@@ -8,18 +8,13 @@ import Animated, {
 } from "react-native-reanimated";
 
 const { width } = Dimensions.get("window");
-const SWIPE_THRESHOLD = width * 0.3;
+const SWIPE_THRESHOLD = width * 0.2;
 
 type SwipeHOCProps = {
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
 };
 
-/**
- * A Higher-Order Component (HOC) that adds swipe gesture support
- * to any wrapped component. Swiping right calls onSwipeRight,
- * swiping left calls onSwipeLeft, and otherwise springs back.
- */
 export function withSwipe<P extends object>(
   WrappedComponent: React.ComponentType<P>
 ) {
@@ -45,7 +40,6 @@ export function withSwipe<P extends object>(
 
         if (isSwipedRight) {
           translateX.value = withSpring(width, { damping: 15 }, () => {
-            // ✅ Safe JS callback without runOnJS
             if (onSwipeRight) {
               queueMicrotask(() => onSwipeRight());
             }
@@ -62,8 +56,7 @@ export function withSwipe<P extends object>(
         }
       });
 
-    // Animate card position + rotation
-    const animatedStyle = useAnimatedStyle(() => ({
+      const animatedStyle = useAnimatedStyle(() => ({
       transform: [
         { translateX: translateX.value },
         { rotate: `${rotate.value}deg` },
