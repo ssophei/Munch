@@ -16,9 +16,11 @@ headers = {
 }
 
 params = {
-    "term": "coffee",
+    "term": "food",
     "location": "Berkeley",
+    "coordinate": 90,
     "limit": 50
+
 }
 
 # Send GET request
@@ -34,7 +36,7 @@ else:
 
 # Convert to pandas DataFrame and make a copy
 df = pd.json_normalize(businesses)
-df_subset = df[["name", "rating", "review_count", "price", "location.city", "categories"]].copy()
+df_subset = df[["name", "rating", "review_count", "price", "location.city","coordinates.latitude","coordinates.longitude", "categories","distance"]].copy()
 print(df_subset.head())
 
 # Save to CSV
@@ -89,9 +91,7 @@ df_subset['price_normalized'] = scaler.fit_transform(df_subset[['price_encoded']
 df_subset['price_predicted'] = df_subset['price']  # original price
 df_subset.loc[missing_rows, 'price_predicted'] = df_subset.loc[missing_rows, 'price_encoded']
 
-# -----------------------
-# Heatmap
-# -----------------------
+
 rating_bins = np.arange(0, 5.5, 0.5)
 review_bins = np.arange(0, df_subset['review_count'].max()+10, 10)
 
@@ -117,9 +117,8 @@ plt.xticks(rotation=45)
 plt.yticks(rotation=0)
 plt.show()
 
-# -----------------------
-# Hexmap
-# -----------------------
+
+#hex map ( for midsems )
 plt.figure(figsize=(10,6))
 plt.hexbin(
     df_subset['review_count'],
@@ -140,3 +139,4 @@ plt.show()
 # -----------------------
 predicted_table = df_subset.loc[missing_rows, ['name', 'price_predicted', 'price_normalized']]
 print(predicted_table)
+
