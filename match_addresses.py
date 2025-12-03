@@ -1,8 +1,6 @@
 import pandas as pd
 import requests
-
-GOOGLE_MAPS_API_KEY = "AIzaSyAN-c6fsRDGOs_vmPoUDeXe2w9X0W1cGjg"
-
+GOOGLE_MAPS_API_KEY = "hello"
 def match_address(lat, lng):
     "match coordinates to addresses"
     url = "https://maps.googleapis.com/maps/api/geocode/json"
