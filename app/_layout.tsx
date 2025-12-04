@@ -1,6 +1,5 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -8,6 +7,13 @@ import { View } from 'react-native';
 import Colors from '@/constants/Colors';
 import 'react-native-reanimated';
 import"./global.css";
+import { 
+  useFonts, 
+  Montserrat_100Thin,
+  Montserrat_400Regular,
+  Montserrat_600SemiBold,
+  Montserrat_700Bold
+} from '@expo-google-fonts/montserrat';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -44,8 +50,10 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
+    'montserrat-thin': Montserrat_100Thin,
+    'montserrat-regular': Montserrat_400Regular,
+    'montserrat-semibold': Montserrat_600SemiBold, 
+    'montserrat-bold': Montserrat_700Bold,
   });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.

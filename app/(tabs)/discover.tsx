@@ -1,6 +1,7 @@
-import { Text, View } from "@/components/Themed";
+import { Text, View } from "react-native";
 import RestaurantCard from "@/components/RestaurantCard"; 
 import { withSwipe } from "@/components/Swipe";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SwipeableRestaurantCard = withSwipe(RestaurantCard);
  
@@ -8,16 +9,21 @@ const SwipeableRestaurantCard = withSwipe(RestaurantCard);
 // this is where you can test your changes! 
 export default function DiscoverScreen() {
   return (
-    <View className="flex-1 items-center justify-center">
-      <Text className="text-xl font-bold text-blue-500">
-      this is the page where users swipe!
-      </Text>
-    <SwipeableRestaurantCard 
-      name="example restaurant name"
-      onSwipeLeft={() => console.log("❌ Disliked")}
-      onSwipeRight={() => console.log("❤️ Liked")}>
-    </SwipeableRestaurantCard>
-    </View>
+    <SafeAreaView className="flex-1 bg-primary" edges={['top', 'bottom']}>
+      <View className="flex-1 items-center justify-center flex-col">
+        <Text className="text-xl font-semibold mt-40 text-accent mb-5" style={{ fontFamily: 'montserrat-bold' }}>
+          Berkeley, CA
+        </Text>
+        <View className="w-11/12 max-w-sm aspect-video">
+          <SwipeableRestaurantCard 
+            name="example restaurant name"
+            onSwipeLeft={() => console.log("❌ Disliked")}
+            onSwipeRight={() => console.log("❤️ Liked")}
+          >
+        </SwipeableRestaurantCard>
+      </View>
+      </View>
+    </SafeAreaView>
   );
 }
 

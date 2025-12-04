@@ -10,7 +10,7 @@ export default function RestaurantCard({ name }: RestaurantCardProps) {
   return (
     // TODO: use your new props to display additional information 
     // BONUS TODO: use tailwind classes (look through documentation) to adjust styling
-    <View className="bg-white rounded-2xl shadow-md overflow-hidden">
+    <View className="flex-1 bg-white rounded-2xl items-center shadow-md overflow-hidden">
       <View className="p-4 text-blue-500">
         <Text>{name}</Text>
       </View>
