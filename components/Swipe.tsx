@@ -1,6 +1,6 @@
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import React from "react";
 import { Dimensions } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -64,6 +64,7 @@ export function withSwipe<P extends object>(
     }));
 
     return (
+    <GestureHandlerRootView>
       <GestureDetector gesture={pan}>
         <Animated.View
           className="absolute w-full items-center"
@@ -72,6 +73,7 @@ export function withSwipe<P extends object>(
           <WrappedComponent {...(props as P)} />
         </Animated.View>
       </GestureDetector>
+    </GestureHandlerRootView>
     );
   };
 }

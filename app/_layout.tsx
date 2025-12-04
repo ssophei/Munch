@@ -4,12 +4,13 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { View } from '@/components/Themed';
+import { View } from 'react-native';
 import Colors from '@/constants/Colors';
 import 'react-native-reanimated';
 import"./global.css";
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -23,27 +24,21 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: 
-            Colors[colorScheme ?? 'light'].background,
-        }}
-      >
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: 
-            Colors[colorScheme ?? 'light'].background,
-          },
-        }}
-      >
-      <Stack.Screen name="(tabs)" />
-      </Stack>
-      </View>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors[colorScheme].background}}>  
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: {
+              backgroundColor: 
+              Colors[colorScheme ?? 'light'].background,
+            },
+          }}
+        >
+        <Stack.Screen name="(tabs)" />
+        </Stack>
+      </ThemeProvider>
+    </GestureHandlerRootView>  
   );
 }
 
