@@ -1,12 +1,14 @@
-import { Text, View, Image} from "react-native";
+import { Text, View, Image, ScrollView} from "react-native";
 import RestaurantCard from "@/components/RestaurantCard"; 
-import { withSwipe } from "@/components/Swipe";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useContext } from "react";
+import { MatchesContext } from "@/app/(tabs)/_layout";
 
-const SwipeableRestaurantCard = withSwipe(RestaurantCard);
 const munchLogo = require('../../assets/images/munch-logo.png');
 
 export default function MatchesScreen() {
+  const { matches } = useContext(MatchesContext);
+
   return (
     <SafeAreaView className="flex-1 bg-primary" edges={['top', 'bottom']}>
       <View className="flex-1 items-center justify-start flex-col">
@@ -14,15 +16,14 @@ export default function MatchesScreen() {
         <Text className="text-5xl font-semibold mt-40 text-accent mb-5" style={{ fontFamily: 'montserrat-bold' }}>
           Your Matches
         </Text>
-        <View className="w-11/12 max-w-sm aspect-video">
-          <SwipeableRestaurantCard 
-            name="example match name"
-            onSwipeLeft={() => console.log("❌ Disliked")}
-            onSwipeRight={() => console.log("❤️ Liked")}
-          >
-          </SwipeableRestaurantCard>
-      </View>
+        <ScrollView contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}>
+          {matches.map((restaurant, index) => (
+            <View key={index} style={{ marginBottom: 16 }}>
+              <RestaurantCard {...restaurant} />
+            </View>
+          ))}
+        </ScrollView>
       </View>
     </SafeAreaView>
-  );
-}
+  )
+};
