@@ -1,5 +1,4 @@
-import { Text, View } from "react-native";
-import RestaurantCard from "@/components/RestaurantCard"; 
+import { Text, View} from 'react-native';import RestaurantCard from "@/components/RestaurantCard"; 
 import { withSwipe } from "@/components/Swipe";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
