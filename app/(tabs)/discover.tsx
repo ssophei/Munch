@@ -1,7 +1,10 @@
 import { MatchesContext } from "@/app/(tabs)/_layout";
+import Button from "@/components/Button";
+import CrossButton from "@/components/CrossButton";
+import HeartButton from "@/components/HeartButton";
 import RestaurantCard from "@/components/RestaurantCard";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import { Alert, Dimensions, Text, View } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -130,12 +133,13 @@ export default function DiscoverScreen() {
   const [matches, setMatches] = useState<any[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { addMatch } = useContext(MatchesContext);
+  const swiperRef = useRef<any>(null);
 
-const onSwipedRight = (cardIndex: number) => {
-  const restaurant = restaurants[cardIndex];
-  addMatch(restaurant); // <-- automatically adds to matches
-  Alert.alert("Added to Matches!", `${restaurant.name} has been added to your Matches.`);
-  setCurrentIndex(cardIndex + 1);
+  const onSwipedRight = (cardIndex: number) => {
+    const restaurant = restaurants[cardIndex];
+    addMatch(restaurant); // <-- automatically adds to matches
+    Alert.alert("Added to Matches!", `${restaurant.name} has been added to your Matches.`);
+    setCurrentIndex(cardIndex + 1);
 
   };
   const onSwipedLeft = (cardIndex: number) => {
@@ -157,8 +161,9 @@ const onSwipedRight = (cardIndex: number) => {
       </View>
 
       {/* Swiper container */}
-      <View className='w-full flex-1 justify-center items-center' style={{ marginTop: -40 }}>
+      <View className='w-full flex-1 flex-col justify-center items-center' style={{ marginTop: -40 }}>
         <Swiper
+          ref={swiperRef}
           cards={restaurants}
           renderCard={(card) => (
               <RestaurantCard
@@ -179,6 +184,10 @@ const onSwipedRight = (cardIndex: number) => {
           verticalSwipe={false}
           horizontalSwipe={true}
         />
+        <View className="absolute bottom-0 gap-10 flex shadow-md flex-row">
+          <CrossButton restaurant={currentCard} onLike={() => swiperRef.current?.swipeRight()}></CrossButton>
+          <HeartButton restaurant={currentCard} onLike={() => swiperRef.current?.swipeRight()}></HeartButton>
+        </View>   
       </View>
     </SafeAreaView>
   );

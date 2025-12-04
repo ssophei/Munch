@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react-native";
+import { X } from "lucide-react-native";
 import React, { useState } from "react";
 import { Pressable, TouchableOpacity } from "react-native";
 
@@ -29,7 +29,7 @@ export default function HeartButton({ restaurant, onLike }: HeartButtonProps) {
 
   return (
     <TouchableOpacity onPress={handlePress} className="bg-accent w-24 h-24 rounded-full flex justify-center items-center">
-      <Heart size={50} color="white"></Heart>
+      <X size={60} color="white"></X>
     </TouchableOpacity>
   );
 }
