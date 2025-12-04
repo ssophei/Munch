@@ -11,8 +11,9 @@ module.exports = {
     extend: {
       colors: {
         'primary': '#fed0bb',
-        'accent': '#8C2F39'
-,      }
+        'accent': '#8C2F39',
+        'secondary': '#AB797A',
+      }
     },
   },
   plugins: [],

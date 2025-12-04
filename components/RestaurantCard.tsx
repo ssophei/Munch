@@ -1,5 +1,6 @@
 import HeartButton from "@/components/HeartButton";
 import { Image, Text, View } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
 
 export interface RestaurantCardProps {
   name: string;
@@ -14,34 +15,35 @@ export interface RestaurantCardProps {
 };
 
 export default function RestaurantCard({name, rating, imageUrl, category, price, location, distance}: RestaurantCardProps) {
-
   return (
-    <View className="bg-white rounded-2xl w-64 h-72 shadow-md relative">
+    <View className="rounded-2xl w-full h-2/3 shadow-md relative">
       {/* Image */}
       <Image
         source={{ uri: imageUrl }}
-        className="w-full h-36 rounded-t-2xl "
+        className="w-full h-full rounded-2xl "
         resizeMode="cover"
       />
 
-      {/* Card content */}
-      <View className="p-3 flex-1">
+      <LinearGradient
+        colors={[
+          'transparent',
+          'rgba(0,0,0,0.7)',
+        ]}
+        style={{ width: '100%', height: '60%', position: 'absolute', bottom: 0, left: 0, zIndex: 50, borderRadius: 15}}
+      />
+
+      <View className="absolute bottom-5 left-0 right-0 z-50 pb-5 pl-5 items-start">
         {/* Name and category */}
-        <View className="mb-2">
-          <Text className="text-lg font-semibold">{name}</Text>
-          <Text className="text-gray-500">{category}</Text>
+        <View className="mb-2 w-5/6">
+          <Text className="text-4xl text-white mb-3" style={{ fontFamily: 'montserrat-bold'}}>{name}</Text>
+          <Text className="text-gray-200" style={{ fontFamily: 'montserrat-semibold' }}>{category}</Text>
         </View>
 
         {/* Rating, Price, Distance */}
-        <View className="flex-row items-center justify-between mb-1">
-          <Text className="text-yellow-500 font-semibold">{rating}⭐</Text>
+        <View className="flex-row items-center justify-between mb-1 w-full">
+          <Text className="text-yellow-500 font-semibold text-lg" style={{ fontFamily: 'montserrat-bold' }}>{rating} ⭐</Text>
+          <Text className="text-gray-200 font-semibold mr-10 text-lg" style={{ fontFamily: 'montserrat-bold' }}>{price}</Text>
         </View>
-      </View>
-
-      {/* Heart + price in bottom-left */}
-      <Text className="absolute bottom-3 left-3 right-3 flex-row justidy-between items-center text-gray-700 font-semibold">{price}</Text>
-      <View className="absolute right-3 bottom-3 flex-row items-center space-x-2">
-        <HeartButton restaurant={{ name, imageUrl }} />
       </View>
     </View>
   );

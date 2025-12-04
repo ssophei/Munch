@@ -4,12 +4,8 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import { Alert, Dimensions, Text, View } from "react-native";
 import Swiper from "react-native-deck-swiper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-const CARD_WIDTH = 260;
-const CARD_HEIGHT = 320;
 
 const restaurants = [
   {
@@ -149,45 +145,22 @@ const onSwipedRight = (cardIndex: number) => {
     restaurants[currentIndex] || restaurants[restaurants.length - 1];
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#FED0BB",
-      }}
-    >
+    <SafeAreaView className="flex-1 items-center bg-primary flex-col">
       {/* Header above card */}
-      <View style={{ alignItems: "center", marginBottom: -60, marginTop: 60 }}>
-        <Text style={{ fontSize: 18, fontWeight: "600", color: "#555" }}>
+      <View className= "justify-center items-center pt-5">
+        <Text className="text-accent text-4xl" style={{ fontFamily: 'montserrat-bold' }}>
           {currentCard.location}
         </Text>
-        <Text style={{ fontSize: 14, color: "#777" }}>
+        <Text className="text-secondary text-xl" style={{ fontFamily: 'montserrat-semibold'}}>
           {currentCard.distance} mi away
         </Text>
       </View>
 
       {/* Swiper container */}
-      <View
-        style={{
-          width: SCREEN_WIDTH, 
-          height: CARD_HEIGHT + 50, // allow some extra space for swipe
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View className='w-full flex-1 justify-center items-center' style={{ marginTop: -40 }}>
         <Swiper
           cards={restaurants}
           renderCard={(card) => (
-            <View
-              style={{
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                justifyContent: "center",
-                alignItems: "center",
-                alignSelf: "center",
-              }}
-            >
               <RestaurantCard
                 name={card.name}
                 rating={card.rating}
@@ -197,7 +170,6 @@ const onSwipedRight = (cardIndex: number) => {
                 location={card.location}
                 distance={card.distance}
               />
-            </View>
           )}
           onSwipedRight={onSwipedRight}
           onSwipedLeft={onSwipedLeft}
@@ -208,6 +180,6 @@ const onSwipedRight = (cardIndex: number) => {
           horizontalSwipe={true}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
