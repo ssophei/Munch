@@ -1,12 +1,13 @@
 // TODO: looking at the app's nav bar, we can see that the icons shown don't match their respective pages.
 // currently, we are using the FontAwesome icon pack, part of the @expo/vector-icons bundle. 
 import React, { createContext, useState } from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Tabs } from 'expo-router';
 import "../global.css";
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import { View } from 'react-native';
 
 // --- Create Matches Context ---
 export const MatchesContext = createContext<{
@@ -20,10 +21,10 @@ export const MatchesContext = createContext<{
 // TODO: explore the built-in icon families and icons at https://icons.expo.fyi/
 // TODO: replace FontAwesome with the icon family you'd like to use. 
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof FontAwesome6>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome6 size={18} style={{ marginBottom: 3 }} {...props} />;
 }
 
 // TODO: change the icons below!
@@ -52,7 +53,10 @@ export default function TabLayout() {
         name="discover"
         options={{
           title: 'Discover',
-          tabBarIcon: ({ color }) => <TabBarIcon name="glass" color={color} />,
+          tabBarIcon: ({ color }) => 
+            <View style={{ paddingTop:6}}> 
+              <TabBarIcon name="magnifying-glass" color={color} />
+            </View>,
           tabBarLabelStyle: {
             fontFamily: 'montserrat-semibold',
           }
@@ -62,7 +66,10 @@ export default function TabLayout() {
         name="matches"
         options={{
           title: 'Matches',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => 
+            <View style={{ paddingTop:6}}> 
+              <TabBarIcon name="fire" color={color} />
+            </View>,
           tabBarLabelStyle: {
             fontFamily: 'montserrat-semibold',
           }
@@ -72,7 +79,10 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="signal" color={color} />,
+          tabBarIcon: ({ color }) => 
+            <View style={{ paddingTop:6}}> 
+              <TabBarIcon name="gear" color={color} />
+            </View>,
           tabBarLabelStyle: {
             fontFamily: 'montserrat-semibold',
           }
