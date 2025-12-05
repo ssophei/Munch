@@ -13,16 +13,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft } from "lucide-react-native";
 
 const CUISINES = [
-  "Korean",
-  "Japanese",
   "Chinese",
+  "Japanese",
+  "Korean",
   "Thai",
   "Indian",
   "Mexican",
   "New American",
   "Italian",
   "French",
-  "Greek",
+  "Vietnamese",
   "Drinks",
   "Fusion",
   "Ethiopian",

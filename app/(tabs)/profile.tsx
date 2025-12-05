@@ -7,16 +7,16 @@ import Toast from 'react-native-toast-message';
 import { BaseToast, ErrorToast } from 'react-native-toast-message';
  
 const CUISINES = [
-  "Korean",
-  "Japanese",
   "Chinese",
+  "Japanese",
+  "Korean",
   "Thai",
   "Indian",
   "Mexican",
   "New American",
   "Italian",
   "French",
-  "Greek",
+  "Vietnamese",
   "Drinks",
   "Fusion",
   "Ethiopian",
@@ -64,7 +64,7 @@ const toastConfig = {
 };
 
 export default function profileScreen() {
-  const defaultSelectedItems = ["Korean", "Mexican", "Italian", "Drinks", "New American", "Vegetarian"];
+  const defaultSelectedItems = ["Chinese", "Vietnamese", "Italian", "Drinks", "New American", "Vegetarian"];
   const [selected, setSelected] = useState<string[]>(defaultSelectedItems);
 
   const toggleCuisine = (name: string) => {
