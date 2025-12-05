@@ -10,48 +10,46 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const router = useRouter();
-
 const AuthLandingScreen = () => {
+  const router = useRouter();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header text */}
-        <Text style={styles.header}>Login/Create Account</Text>
 
-        {/* Logo */}
-        <View style={styles.logoWrapper}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.logo}
-          />
-        </View>
-
-        {/* Legal text */}
-        <Text style={styles.legal}>
-          BY TAPPING 'SIGN IN' / 'CREATE ACCOUNT', YOU AGREE TO OUR{" "}
-          <Text style={styles.link}>TERMS OF SERVICE</Text>. LEARN HOW WE
-          PROCESS YOUR DATA IN OUR <Text style={styles.link}>PRIVACY POLICY</Text>{" "}
-          AND <Text style={styles.link}>COOKIES POLICY</Text>.
-        </Text>
+      <View style={styles.logoWrapper}>
+        <Image
+          source={require("../../assets/images/logo.png")}
+          style={styles.logo}
+        />
+      </View>
 
         {/* Create Account button */}
         <TouchableOpacity
           style={styles.createButton}
           onPress={() => router.push("/create-account")}
         >
-          <Text style={styles.createButtonText}>CREATE ACCOUNT</Text>
+          <Text style={styles.createButtonText}>Create Account</Text>
         </TouchableOpacity>
 
         {/* Sign in link */}
         <TouchableOpacity
           onPress={() => router.push("/login")}
         >
-          <Text style={styles.signIn}>sign in</Text>
+          <Text style={styles.signIn}>Sign In</Text>
         </TouchableOpacity>
+
+        
+        {/* Legal text */}
+        <Text style={styles.legal}>
+          By tapping 'Sign In' / 'Create Account', you agree to our{" "}
+          <Text style={styles.link}>terms of service</Text>. Learn how we
+          process your data in our <Text style={styles.link}>privacy policy</Text>{" "}
+          and <Text style={styles.link}>cookies policy</Text>.
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -95,8 +93,9 @@ const styles = StyleSheet.create({
     color: "#5b2b32",
     fontSize: 12,
     marginHorizontal: 10,
-    marginBottom: 40,
+    marginTop: 40,
     lineHeight: 18,
+    fontFamily: "montserrat-regular"
   },
 
   link: {
@@ -112,10 +111,11 @@ const styles = StyleSheet.create({
   },
 
   createButtonText: {
-    color: "#ffd5ea",
-    fontSize: 20,
+    color: "#ffffff",
+    fontSize: 24,
     letterSpacing: 2,
     fontWeight: "600",
+    fontFamily: "montserrat-bold",
   },
 
   signIn: {
@@ -124,5 +124,6 @@ const styles = StyleSheet.create({
     color: "#3b1322",
     fontSize: 22,
     fontWeight: "600",
+    fontFamily: "montserrat-bold",
   },
 });

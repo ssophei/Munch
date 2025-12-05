@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
 import React, { useRef, useState } from "react";
 import {
   Image,
@@ -10,11 +11,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const router = useRouter()
 
 const ConfirmationCodeScreen = () => {
   const [code, setCode] = useState(["", "", "", ""]);
   const inputs = useRef<TextInput[]>([]);
+  const router = useRouter();
 
   const handleChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return; // allow only digits
@@ -28,17 +29,18 @@ const ConfirmationCodeScreen = () => {
     }
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
 
-        {/* Header */}
-        <Text style={styles.header}>Confirmation code</Text>
-
-        {/* Back + Logo */}
+        {/* Logo + Back Button */}
         <View style={styles.topSection}>
-          <TouchableOpacity style={styles.backButton}>
-            <Text style={styles.backIcon}>〈</Text>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <ChevronLeft size={48} color="#8b2c33"/>
           </TouchableOpacity>
 
           <Image
@@ -48,7 +50,7 @@ const ConfirmationCodeScreen = () => {
         </View>
 
         {/* Title & Info Text */}
-        <Text style={styles.title}>Enter confirmation code</Text>
+        <Text style={styles.title}>Confirmation Code</Text>
         <Text style={styles.subtitle}>
           A 4-digit code was sent to{"\n"}(123)-456-7890
         </Text>
@@ -79,7 +81,7 @@ const ConfirmationCodeScreen = () => {
         <TouchableOpacity style={styles.continueButton}
           onPress={() => router.push("/location")}
         >
-          <Text style={styles.continueText}>CONTINUE</Text>
+          <Text style={styles.continueText}>Continue</Text>
         </TouchableOpacity>
 
       </View>
@@ -98,6 +100,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffd9c5",
     paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
   },
 
   header: {
@@ -108,20 +113,18 @@ const styles = StyleSheet.create({
   },
 
   topSection: {
+    width: "100%",
+    backgroundColor: "#ffd9c5",
+    paddingTop: 20,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
+    fontFamily: 'montserrat-bold',
   },
 
   backButton: {
     position: "absolute",
     left: 0,
     top: 10,
-  },
-
-  backIcon: {
-    fontSize: 32,
-    color: "#3b1322",
   },
 
   logo: {
@@ -131,19 +134,21 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 22,
+    fontSize: 36,
     fontWeight: "700",
     color: "#3b1322",
     textAlign: "center",
     marginTop: 10,
+    fontFamily: 'montserrat-bold',
   },
 
   subtitle: {
     textAlign: "center",
-    color: "#3b1322",
+    color: "#8b2c33",
     fontSize: 16,
     marginTop: 6,
     marginBottom: 30,
+    fontFamily: 'montserrat-semibold',
   },
 
   codeContainer: {
@@ -172,21 +177,24 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textDecorationLine: "underline",
     marginBottom: 40,
+    fontFamily: 'montserrat-bold',
+
   },
 
-  continueButton: {
+  continueButton: { 
     backgroundColor: "#3b1322",
     borderRadius: 40,
     paddingVertical: 18,
+    width: "100%",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 30,
   },
 
   continueText: {
-    color: "#ffd5ea",
+    color: "#ffffff",
     fontSize: 22,
-    letterSpacing: 4,
     fontWeight: "600",
+    fontFamily: "montserrat-semibold",
   },
 });

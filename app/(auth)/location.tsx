@@ -1,74 +1,96 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
+import { ChevronLeft,  MapPin} from "lucide-react-native";
 import {
   Image,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const router = useRouter()
-
-type Suggestion = {
-  id: string;
-  line1: string;
-  line2: string;
-};
-
-const SUGGESTIONS: Suggestion[] = [
-  {
-    id: "1",
-    line1: "205 Aunty Ave",
-    line2: "Bannanton, CA 07604",
-  },
-  {
-    id: "2",
-    line1: "205 Wescott Ln",
-    line2: "Bannanton, CA 07604",
-  },
-  {
-    id: "3",
-    line1: "205 Kishingham Dr",
-    line2: "Bannanton, CA 07604",
-  },
-];
+import * as Location from 'expo-location';
 
 const LocationScreen: React.FC = () => {
+  const router = useRouter();
   const [query, setQuery] = useState("");
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const filteredSuggestions = SUGGESTIONS.filter((s) =>
-    s.line1.toLowerCase().startsWith(query.toLowerCase())
-  );
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
-  const handleSelectSuggestion = (s: Suggestion) => {
-    setQuery(s.line1);
-    setShowSuggestions(false);
-  };
+  const fetchLocationAndPermissions = async () => {
+    setIsLoadingLocation(true);
+    setErrorMsg('');
 
-  const handleUseCurrentLocation = () => {
-    // TODO: hook into location services
-    console.log("Use current location tapped");
+    // Request Permission
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      setErrorMsg('Permission to access location was denied.');
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    // Get Location
+    try {
+      let currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Low, // Use low accuracy for better speed/battery
+        timeInterval: 10000,
+      });
+      setLocation(currentLocation);
+      console.log("Current Location fetched:", currentLocation.coords);
+
+      // In a real app, you would use Reverse Geocoding here:
+      // const geocodedAddress = await Location.reverseGeocodeAsync(currentLocation.coords);
+      
+      // Placeholder: Set input to coordinates
+      const addressPlaceholder = `Lat: ${currentLocation.coords.latitude.toFixed(4)}, Lon: ${currentLocation.coords.longitude.toFixed(4)}`;
+      setQuery(addressPlaceholder);
+
+    } catch (error) {
+      console.error("Error fetching location:", error);
+      setErrorMsg('Failed to fetch location.');
+    } finally {
+      setIsLoadingLocation(false);
+    }
   };
 
   const handleNext = () => {
+    if (!location) {
+        Alert.alert("Location Required", "Please allow location access before proceeding.");
+        return;
+    }
     console.log("Selected address:", query);
     router.push("/cuisines")
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
+  const getLocationStatusText = () => {
+    if (isLoadingLocation) return "";
+    if (errorMsg) return "Location access denied.";
+    if (location) return "Berkeley, CA 94704";
+    return "";
+}
+
+  const getBlurbText = () => {
+  if (isLoadingLocation) return "";
+  if (errorMsg) return "Location access denied.";
+  if (location) return "Got it! We'll show you around.";
+  return "Where are you munching today?";
+}
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* Top label */}
-        <Text style={styles.header}>Where are you located?</Text>
-
         {/* Back + Logo */}
         <View style={styles.logoSection}>
-          <TouchableOpacity style={styles.backButton}>
-            <Text style={styles.backIcon}>〈</Text>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <ChevronLeft size={48} color="#8b2c33"/>
           </TouchableOpacity>
 
           <Image
@@ -79,61 +101,37 @@ const LocationScreen: React.FC = () => {
 
         {/* Question with pin icon */}
         <View style={styles.questionRow}>
-          <Text style={styles.pinIcon}>📍</Text>
-          <Text style={styles.questionText}>Where are you located?</Text>
+          {isLoadingLocation}
+            <Text style={styles.blurbText}>{getBlurbText()}</Text>
         </View>
 
         {/* Search row */}
-        <View style={styles.searchRow}>
-          <View style={styles.searchInputWrapper}>
-            <TextInput
-              style={styles.searchInput}
-              value={query}
-              onChangeText={(text) => {
-                setQuery(text);
-                setShowSuggestions(text.length > 0);
-              }}
-              placeholder="205"
-              placeholderTextColor="#8d8d8d"
-            />
-          </View>
-
-          <TouchableOpacity style={styles.sendButton}>
-            <Text style={styles.sendIcon}>➤</Text>
-          </TouchableOpacity>
+        <View style={styles.statusRow}>
+            <MapPin size={70} color={"#a33b3b"}/>
+            {isLoadingLocation}
+            <Text style={styles.statusText}>{getLocationStatusText()}</Text>
         </View>
 
-        {/* Suggestions + current location */}
-        {showSuggestions && (
-          <View style={styles.suggestionsRow}>
-            <View style={styles.suggestionsBox}>
-              {filteredSuggestions.map((s) => (
-                <TouchableOpacity
-                  key={s.id}
-                  style={styles.suggestionItem}
-                  onPress={() => handleSelectSuggestion(s)}
-                >
-                  <Text style={styles.suggestionLine1}>{s.line1}</Text>
-                  <Text style={styles.suggestionLine2}>{s.line2}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <TouchableOpacity
-              style={styles.currentLocationBox}
-              onPress={handleUseCurrentLocation}
+        {!location && !isLoadingLocation && (
+            <TouchableOpacity 
+                style={styles.findLocationButton}
+                onPress={fetchLocationAndPermissions}
             >
-              <Text style={styles.currentLocationText}>Use current location</Text>
+                <Text style={styles.findLocationButtonText}>Use My Current Location</Text>
             </TouchableOpacity>
-          </View>
         )}
 
         {/* Spacer */}
         <View style={{ flex: 1 }} />
 
         {/* NEXT button */}
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextText}>NEXT</Text>
+        <TouchableOpacity 
+            style={[styles.nextButton, !location && styles.nextButtonDisabled]} 
+            onPress={handleNext}
+            disabled={!location}
+          >
+            <Text style={[styles.nextText, !location && styles.nextButtonDisabled]} disabled={!location}
+            >{location ? "Next" : "Awaiting Location..."}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -149,8 +147,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    width: "100%", 
     backgroundColor: "#ffd9c5",
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     paddingBottom: 24,
   },
 
@@ -161,11 +160,28 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
+  statusRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 12,
+    marginTop: 10,
+    marginLeft: 15,
+    gap: 15,
+  },
+  statusText: {
+    fontSize: 48,
+    color: '#a33b3b',
+    fontWeight: '500',
+    fontFamily: "montserrat-bold",
+  },
+
   logoSection: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,
   },
+
   backButton: {
     position: "absolute",
     left: 0,
@@ -175,26 +191,25 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#3b1322",
   },
+
+
   logo: {
-    width: 130,
-    height: 130,
+    width: 200,
+    height: 200,
     resizeMode: "contain",
   },
 
   questionRow: {
     flexDirection: "row",
     alignItems: "center",
+    width: "95%",
     marginTop: 12,
     marginBottom: 10,
   },
-  pinIcon: {
-    fontSize: 22,
-    marginRight: 6,
-  },
-  questionText: {
-    fontSize: 22,
-    fontWeight: "700",
+  blurbText: {
+    fontSize: 40,
     color: "#3b1322",
+    fontFamily: "montserrat-bold"
   },
 
   searchRow: {
@@ -215,6 +230,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 8,
   },
+
+  findLocationButton: {
+    backgroundColor: "#8C2F39",
+    borderRadius: 30,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  findLocationButtonText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
+    fontFamily: "montserrat-bold",
+  },
+
   sendButton: {
     marginLeft: 8,
     width: 44,
@@ -234,35 +266,6 @@ const styles = StyleSheet.create({
     color: "#3b1322",
   },
 
-  suggestionsRow: {
-    flexDirection: "row",
-    marginTop: 4,
-  },
-  suggestionsBox: {
-    flex: 1,
-    backgroundColor: "#ffe8c8",
-    borderRadius: 18,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  suggestionItem: {
-    paddingVertical: 8,
-  },
-  suggestionLine1: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#3b1322",
-  },
-  suggestionLine2: {
-    fontSize: 14,
-    color: "#3b1322",
-  },
-
   currentLocationBox: {
     marginLeft: 8,
     alignSelf: "flex-start",
@@ -278,7 +281,7 @@ const styles = StyleSheet.create({
   },
   currentLocationText: {
     fontSize: 12,
-    color: "#3b1322",
+    color: "#AB797A",
   },
 
   nextButton: {
@@ -287,12 +290,22 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30,
   },
+
+  nextButtonDisabled: {
+    backgroundColor: "#8d8d8d", // Gray out the button when location is not set
+  },
+
   nextText: {
     fontSize: 22,
-    letterSpacing: 4,
     fontWeight: "600",
-    color: "#ffd5ea",
+    color: "#ffffff",
+    fontFamily: "montserrat-bold"
+  },
+  nextTextDisabled: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#c7bdbd",
+    fontFamily: "montserrat-bold"
   },
 });

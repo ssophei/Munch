@@ -38,57 +38,57 @@ export default function TabLayout() {
 
   return (
     <MatchesContext.Provider value={{ matches, addMatch }}>
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        tabBarInactiveTintColor: '#AB797A',
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#FED0BB',
-          elevation: 5,
-          shadowOpacity: 0.1
-        }
-      }}>
-      <Tabs.Screen
-        name="discover"
-        options={{
-          title: 'Discover',
-          tabBarIcon: ({ color }) => 
-            <View style={{ paddingTop:6}}> 
-              <TabBarIcon name="magnifying-glass" color={color} />
-            </View>,
-          tabBarLabelStyle: {
-            fontFamily: 'montserrat-semibold',
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          tabBarInactiveTintColor: '#AB797A',
+          headerShown: false,
+          tabBarStyle: {
+            backgroundColor: '#FED0BB',
+            elevation: 5,
+            shadowOpacity: 0.1
           }
-        }}
-      />
-      <Tabs.Screen
-        name="matches"
-        options={{
-          title: 'Matches',
-          tabBarIcon: ({ color }) => 
-            <View style={{ paddingTop:6}}> 
-              <TabBarIcon name="fire" color={color} />
-            </View>,
-          tabBarLabelStyle: {
-            fontFamily: 'montserrat-semibold',
-          }
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => 
-            <View style={{ paddingTop:6}}> 
-              <TabBarIcon name="gear" color={color} />
-            </View>,
-          tabBarLabelStyle: {
-            fontFamily: 'montserrat-semibold',
-          }
-        }}
-      />
-    </Tabs>
+        }}>
+        <Tabs.Screen
+          name="discover"
+          options={{
+            title: 'Discover',
+            tabBarIcon: ({ color }) => 
+              <View style={{ paddingTop:6}}> 
+                <TabBarIcon name="magnifying-glass" color={color} />
+              </View>,
+            tabBarLabelStyle: {
+              fontFamily: 'montserrat-semibold',
+            }
+          }}
+        />
+        <Tabs.Screen
+          name="matches"
+          options={{
+            title: 'Matches',
+            tabBarIcon: ({ color }) => 
+              <View style={{ paddingTop:6}}> 
+                <TabBarIcon name="fire" color={color} />
+              </View>,
+            tabBarLabelStyle: {
+              fontFamily: 'montserrat-semibold',
+            }
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => 
+              <View style={{ paddingTop:6}}> 
+                <TabBarIcon name="gear" color={color} />
+              </View>,
+            tabBarLabelStyle: {
+              fontFamily: 'montserrat-semibold',
+            }
+          }}
+        />
+      </Tabs>
     </MatchesContext.Provider>
   );
 }

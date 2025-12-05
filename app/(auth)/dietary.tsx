@@ -1,4 +1,3 @@
-// CuisinesScreen.tsx
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -12,24 +11,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft } from "lucide-react-native";
 
-const CUISINES = [
-  "Korean",
-  "Japanese",
-  "Chinese",
-  "Thai",
-  "Indian",
-  "Mexican",
-  "New American",
-  "Italian",
-  "French",
-  "Greek",
-  "Drinks",
-  "Fusion",
-  "Ethiopian",
-  "Himalayan",
+const DIETARY_RESTRICTIONS = [
+  "Vegetarian",
+  "Vegan",
+  "Gluten-Free",
+  "Dairy-Free",
+  "Nut-Free",
+  "Kosher",
+  "Halal",
+  "No Pork"
 ];
 
-export const CuisinesScreen: React.FC = () => {
+export const RestrictionsScreen: React.FC = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const router = useRouter();
 
@@ -42,7 +35,7 @@ export const CuisinesScreen: React.FC = () => {
   const handleNext = () => {
     // do something with `selected`
     console.log("Selected cuisines:", selected);
-    router.push("/dietary");
+    router.push("/(tabs)/discover");
   };
 
   const handleBack = () => {
@@ -64,7 +57,8 @@ export const CuisinesScreen: React.FC = () => {
             source={require("../../assets/images/logo.png")}
             style={styles.logo}
           />
-          <Text style={styles.title}>Select your favorite cuisines!</Text>
+          <Text className="text-xl" style={{fontFamily: "montserrat-semibold"}}>Almost there.</Text>
+          <Text style={styles.title}>Any dietary restrictions?</Text>
         </View>
       </View>
 
@@ -74,17 +68,17 @@ export const CuisinesScreen: React.FC = () => {
         >
           {/* Buttons grid */}
           <View style={styles.grid}>
-            {CUISINES.map((cuisine) => {
-              const isSelected = selected.includes(cuisine);
+            {DIETARY_RESTRICTIONS.map((restriction) => {
+              const isSelected = selected.includes(restriction);
               return (
                 <TouchableOpacity
-                  key={cuisine}
+                  key={restriction}
                   style={[
                     styles.cuisineButton,
                     isSelected && styles.cuisineButtonSelected,
                   ]}
                   activeOpacity={0.8}
-                  onPress={() => toggleCuisine(cuisine)}
+                  onPress={() => toggleCuisine(restriction)}
                 >
                   <Text
                     style={[
@@ -92,7 +86,7 @@ export const CuisinesScreen: React.FC = () => {
                       isSelected && styles.cuisineTextSelected,
                     ]}
                   >
-                    {cuisine}
+                    {restriction}
                   </Text>
                 </TouchableOpacity>
               );
@@ -107,7 +101,7 @@ export const CuisinesScreen: React.FC = () => {
             activeOpacity={0.9}
             onPress={handleNext}
           >
-            <Text style={styles.nextText}>Next</Text>
+            <Text style={styles.nextText}>Let's Munch!</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -209,4 +203,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CuisinesScreen;
+export default RestrictionsScreen;

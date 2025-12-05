@@ -11,12 +11,12 @@ export default function MatchesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-primary" edges={['top', 'bottom']}>
-      <View className="flex-1 items-center justify-start flex-col">
+      <View className="flex-1 items-center justify-start flex-col h-full">
         <Image source = { munchLogo } style={{ width: 150, height: 150 }}/>
-        <Text className="text-5xl font-semibold mt-40 text-accent mb-5" style={{ fontFamily: 'montserrat-bold' }}>
+        <Text className="text-5xl font-semibold text-accent mb-5" style={{ fontFamily: 'montserrat-bold' }}>
           Your Matches
         </Text>
-        <ScrollView contentContainerStyle={{ alignItems: "center", paddingBottom: 20 }}>
+        <ScrollView className="w-5/6" contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
           {matches.map((restaurant, index) => (
             <View key={index} style={{ marginBottom: 16 }}>
               <RestaurantCard {...restaurant} />

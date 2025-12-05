@@ -9,23 +9,24 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const router = useRouter()
+import { Eye, EyeOff, ChevronLeft } from "lucide-react-native";
 
 const CreateAccountScreen = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const router = useRouter();
+
+  const handleBack = () => {
+    router.back();
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
 
-        {/* Title */}
-        <Text style={styles.header}>Create Account</Text>
-
         {/* Logo + Back Button */}
         <View style={styles.topSection}>
-          <TouchableOpacity style={styles.backButton}>
-            <Text style={styles.backIcon}>〈</Text>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <ChevronLeft size={48} color="#8b2c33"/>
           </TouchableOpacity>
 
           <Image
@@ -34,10 +35,15 @@ const CreateAccountScreen = () => {
           />
         </View>
 
+        {/* Title */}
+        <View className="flex items-center justify-center mb-3">
+          <Text className="text-[#3b1322] text-4xl" style={{ fontFamily: "montserrat-bold"}}>Create Account</Text>
+        </View>
+
         {/* FORM FIELDS */}
         <View style={styles.form}>
           {/* Email */}
-          <Text style={styles.label}>* Email:</Text>
+          <Text style={styles.label}>* Email</Text>
           <TextInput
             style={styles.input}
             placeholder="munchforbiggies@gmail.com"
@@ -46,7 +52,7 @@ const CreateAccountScreen = () => {
           />
 
           {/* Phone */}
-          <Text style={styles.label}>* Phone Number:</Text>
+          <Text style={styles.label}>* Phone Number</Text>
           <TextInput
             style={styles.input}
             placeholder="(123)-456-7890"
@@ -55,7 +61,7 @@ const CreateAccountScreen = () => {
           />
 
           {/* Password */}
-          <Text style={styles.label}>* Password:</Text>
+          <Text style={styles.label}>* Password</Text>
           <View style={styles.passwordWrapper}>
             <TextInput
               style={styles.passwordInput}
@@ -65,7 +71,11 @@ const CreateAccountScreen = () => {
             <TouchableOpacity
               onPress={() => setPasswordVisible(!passwordVisible)}
             >
-              <Text style={styles.eyeIcon}>{passwordVisible ? "👁" : "👁️‍🗨️"}</Text>
+              {passwordVisible ? (
+                <Eye size={24} color="#8C2F39" />
+              ) : (
+                <EyeOff size={24} color="#8C2F39" />
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -75,7 +85,7 @@ const CreateAccountScreen = () => {
           style={styles.nextButton}
           onPress={() => router.push("/confirmation-code")}
         >
-          <Text style={styles.nextText}>NEXT</Text>
+          <Text style={styles.nextText}>Next</Text>
         </TouchableOpacity>
 
       </View>
@@ -92,23 +102,28 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    height: "100%",
     backgroundColor: "#ffd9c5",
     paddingHorizontal: 16,
+    fontFamily: 'montserrat-bold',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // Header
   header: {
-    fontSize: 20,
-    color: "#7b7b7b",
+    color: "#8C2F39",
     marginBottom: 10,
     marginTop: 10,
+    fontSize: 48,
+    fontFamily: 'montserrat-bold',
   },
 
   // Logo and Back Button
   topSection: {
     width: "100%",
     backgroundColor: "#ffd9c5",
-    paddingVertical: 20,
+    paddingTop: 20,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -132,6 +147,7 @@ const styles = StyleSheet.create({
 
   // Form
   form: {
+    width: "100%",
     marginTop: 10,
   },
 
@@ -140,6 +156,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 6,
     color: "#3b1322",
+    fontFamily: 'montserrat-bold',
   },
 
   input: {
@@ -152,6 +169,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     fontSize: 16,
     marginBottom: 22,
+    fontFamily: 'montserrat-semibold',
   },
 
   // Password Input (with eye icon)
@@ -182,7 +200,8 @@ const styles = StyleSheet.create({
   nextButton: {
     backgroundColor: "#3b1322",
     borderRadius: 40,
-    paddingVertical: 18,
+    width: "100%",
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
@@ -190,8 +209,8 @@ const styles = StyleSheet.create({
 
   nextText: {
     fontSize: 22,
-    letterSpacing: 4,
     fontWeight: "600",
-    color: "#ffd5ea",
+    color: "#ffffff",
+    fontFamily: "montserrat-bold",
   },
 });
