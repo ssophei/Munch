@@ -1,7 +1,5 @@
-import HeartButton from "@/components/HeartButton";
-import { Image, Text, View } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
-import { Dimensions } from "react-native";
+import { Dimensions, Image, Text, View } from 'react-native';
 
 export interface RestaurantCardProps {
   name: string;
@@ -42,9 +40,18 @@ export default function RestaurantCard({name, rating, imageUrl, category, price,
         </View>
 
         {/* Rating, Price, Distance */}
-        <View className="flex-row items-center justify-between w-full">
-          <Text className="text-yellow-500 font-semibold text-lg" style={{ fontFamily: 'montserrat-bold' }}>{rating} ⭐</Text>
-          <Text className="text-gray-200 font-semibold mr-10 text-lg" style={{ fontFamily: 'montserrat-bold' }}>{price}</Text>
+        <View className="flex-row items-center gap-4 w-5/6">
+          <Text className="text-yellow-500 font-semibold text-lg" style={{ fontFamily: 'montserrat-bold' }}>
+            {rating ? rating.toFixed(1) : 'N/A'} ⭐
+          </Text>
+          <Text className="text-gray-200 font-semibold text-lg" style={{ fontFamily: 'montserrat-bold' }}>
+            {price || 'N/A'}
+          </Text>
+          {distance > 0 && (
+            <Text className="text-gray-200 font-semibold text-lg" style={{ fontFamily: 'montserrat-bold' }}>
+              {distance} mi
+            </Text>
+          )}
         </View>
       </View>
     </View>

@@ -1,0 +1,15 @@
+{
+  "name": "@munch/shared",
+  "version": "1.0.0",
+  "description": "Shared types and schemas for Munch app",
+  "main": "types.ts",
+  "types": "types.ts",
+  "scripts": {},
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2"
+  }
+}
+
