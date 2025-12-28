@@ -1,162 +1,240 @@
+import { api } from "@/api/client";
 import { MatchesContext } from "@/app/(tabs)/_layout";
 import Button from "@/components/Button";
 import CrossButton from "@/components/CrossButton";
 import HeartButton from "@/components/HeartButton";
 import RestaurantCard from "@/components/RestaurantCard";
+import { APP_CONFIG } from "@/constants/config";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useContext, useState, useRef } from "react";
-import { Alert, Dimensions, Text, View } from "react-native";
+import * as Location from 'expo-location';
+import { useContext, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
-const restaurants = [
-  {
-    name: "Binge Coffee House",
-    rating: 4.5,
-    imageUrl:
-      "https://s3-media0.fl.yelpcdn.com/bphoto/KeqwHnHRrCS_bh2cKYXGnA/o.jpg",
-    category: "Vietnamese, Coffee & Tea, Bubble Tea",
-    price: "$",
-    location: "Downtown Berkeley",
-    distance: 0.4,
-  },
-  {
-    name: "Caffe Strada",
-    rating: 3.8,
-    imageUrl:
-      "https://s3-media0.fl.yelpcdn.com/bphoto/IWfWzaeQAhVyW1sLVCCLZw/o.jpg",
-    category: "Coffee & Tea",
-    price: "$",
-    location: "Berkeley",
-    distance: 1.0,
-  },
-  {
-    name: "Noodle Dynasty",
-    rating: 4.5,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/Hvj2R0_xRpLwRjOhu4UtYA/o.jpg",
-    category: "Noodles",
-    price: "$$",
-    location: "Berkeley, CA",
-    distance: 0.6,
-  },
-  {
-    name: "Le Pho",
-    rating: 3.9,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/VN_KXyZWOYDFO54JACBqoA/348s.jpg",
-    category: "Vietnamese, Noodles",
-    price: "$$",
-    location: "West Berkeley",
-    distance: 1.2,
-  },
-  {
-    name: "My-O-My",
-    rating: 4.4,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/c9Kg0OMGt5S4wNmZrzLIug/o.jpg",
-    category: "Salad, Poutineries, Wraps",
-    price: "$",
-    location: "Berkeley, CA",
-    distance: 0.3,
-  },
-  {
-    name: "Mind Coffee",
-    rating: 4.6,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/700gxabx1vGSY3eKpkKrjA/o.jpg",
-    category: "Coffee & Tea, Coffee Roasteries",
-    price: "$$",
-    location: "Berkeley, CA",
-    distance: 0.4,
-  },
-  {
-    name: "Souvenir Coffee",
-    rating: 4.7,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/KnHbJhpHkNCarzQxqshSeA/o.jpg",
-    category: "Coffee & Tea",
-    price: "$$",
-    location: "Oakland, CA",
-    distance: 3.7,
-  },
-  {
-    name: "The Line Coffee",
-    rating: 4.7,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/qQ9TPZu1MI4tFPm4YI6JYw/o.jpg",
-    category: "Coffee & Tea",
-    price: "$$",
-    location: "Berkeley, CA",
-    distance: 1.0,
-  },
-  {
-    name: "Dave's Hot Chicken",
-    rating: 3.8,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/fkBYB57GIOPyE_ibVFPQCQ/o.jpg",
-    category: "Coffee & Tea",
-    price: "$$",
-    location: "El Cerrito, CA",
-    distance: 3.0,
-  },
-  {
-    name: "The Artisan Cafe",
-    rating: 3.8,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/0N8KksJ2Z59rAlsLwfH61g/o.jpg",
-    category: "Cafes, Salad",
-    price: "$$",
-    location: "Richmond, CA",
-    distance: 5.8,
-  },
-  {
-    name: "Q Specialty Coffee",
-    rating: 4.4,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/bj85MRTGibQ52tRosDu6NA/o.jpg",
-    category: "Coffee Roasteries, Coffee & Tea",
-    price: "$$",
-    location: "San Francisco, CA",
-    distance: 12,
-  },
-  {
-    name: "The Coffee Movement",
-    rating: 4.6,
-    imageUrl: "https://s3-media0.fl.yelpcdn.com/bphoto/X1R2iHnXv8xyhPiy3BgKIw/o.jpg",
-    category: "Coffee & Tea",
-    price: "$$",
-    location: "San Francisco, CA",
-    distance: 14,
-  },
-];
+type Restaurant = {
+  id: string;
+  name: string;
+  rating: number;
+  imageUrl: string;
+  categories: Array<{ alias: string; title: string }>;
+  price?: string;
+  location: {
+    city: string;
+    state: string;
+    displayAddress?: string[];
+  };
+  distance?: number;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+};
 
 type RootStackParamList = {
   Discover: undefined;
-  Matches: { matchedRestaurants: typeof restaurants };
+  Matches: { matchedRestaurants: Restaurant[] };
 };
 
 export default function DiscoverScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [matches, setMatches] = useState<any[]>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { addMatch } = useContext(MatchesContext);
   const swiperRef = useRef<any>(null);
 
-  const onSwipedRight = (cardIndex: number) => {
+  // Get user location
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          const location = await Location.getCurrentPositionAsync({});
+          setUserLocation({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          });
+        } else {
+          console.log('Location permission denied, using default location');
+        }
+      } catch (err) {
+        console.error('Error getting location:', err);
+      }
+    })();
+  }, []);
+
+  // Fetch restaurants from API
+  useEffect(() => {
+    fetchRestaurants();
+  }, [userLocation]);
+
+  const fetchRestaurants = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Use user location if available, otherwise use default
+      const searchParams = userLocation
+        ? {
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            radius: APP_CONFIG.defaultRadius,
+            limit: 20,
+            sort_by: 'best_match' as const,
+          }
+        : {
+            location: APP_CONFIG.defaultLocation,
+            limit: 20,
+            sort_by: 'best_match' as const,
+          };
+
+      console.log('🔍 Searching restaurants with params:', searchParams);
+      
+      const result = await api.restaurants.search(searchParams);
+      
+      console.log(`✅ Fetched ${result.restaurants.length} restaurants`);
+      
+      if (result.restaurants.length === 0) {
+        setError('No restaurants found in your area. Try adjusting your filters.');
+      } else {
+        setRestaurants(result.restaurants);
+      }
+    } catch (err: any) {
+      console.error('❌ Error fetching restaurants:', err);
+      setError(err.message || 'Failed to load restaurants. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSwipedRight = async (cardIndex: number) => {
     const restaurant = restaurants[cardIndex];
-    addMatch(restaurant); // <-- automatically adds to matches
+    if (!restaurant) return;
+
+    // Add to local matches
+    addMatch(restaurant);
+    
+    // Save swipe to backend
+    try {
+      await api.swipes.create({
+        userId: APP_CONFIG.defaultUserId,
+        restaurantId: restaurant.id,
+        action: 'like',
+      });
+      console.log('✅ Saved like for:', restaurant.name);
+    } catch (err) {
+      console.error('❌ Failed to save swipe:', err);
+    }
+
     Alert.alert("Added to Matches!", `${restaurant.name} has been added to your Matches.`);
     setCurrentIndex(cardIndex + 1);
-
   };
-  const onSwipedLeft = (cardIndex: number) => {
+
+  const onSwipedLeft = async (cardIndex: number) => {
+    const restaurant = restaurants[cardIndex];
+    if (!restaurant) return;
+
+    // Save swipe to backend
+    try {
+      await api.swipes.create({
+        userId: APP_CONFIG.defaultUserId,
+        restaurantId: restaurant.id,
+        action: 'pass',
+      });
+      console.log('✅ Saved pass for:', restaurant.name);
+    } catch (err) {
+      console.error('❌ Failed to save swipe:', err);
+    }
+
     setCurrentIndex(cardIndex + 1);
   };
-  const currentCard =
-    restaurants[currentIndex] || restaurants[restaurants.length - 1];
+
+  // Loading state
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-primary">
+        <ActivityIndicator size="large" color="#8C2F39" />
+        <Text className="text-accent text-xl mt-4" style={{ fontFamily: 'montserrat-semibold' }}>
+          Finding restaurants...
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-primary px-8">
+        <Text className="text-accent text-2xl text-center mb-4" style={{ fontFamily: 'montserrat-bold' }}>
+          Oops!
+        </Text>
+        <Text className="text-secondary text-center mb-6" style={{ fontFamily: 'montserrat-regular' }}>
+          {error}
+        </Text>
+        <Button onPress={fetchRestaurants}>
+          <Text className="text-white text-lg" style={{ fontFamily: 'montserrat-semibold' }}>
+            Retry
+          </Text>
+        </Button>
+      </SafeAreaView>
+    );
+  }
+
+  // No restaurants state
+  if (restaurants.length === 0) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-primary px-8">
+        <Text className="text-accent text-2xl text-center mb-4" style={{ fontFamily: 'montserrat-bold' }}>
+          No Restaurants Found
+        </Text>
+        <Text className="text-secondary text-center mb-6" style={{ fontFamily: 'montserrat-regular' }}>
+          Try adjusting your location or preferences.
+        </Text>
+        <Button onPress={fetchRestaurants}>
+          <Text className="text-white text-lg" style={{ fontFamily: 'montserrat-semibold' }}>
+            Refresh
+          </Text>
+        </Button>
+      </SafeAreaView>
+    );
+  }
+
+  const currentCard = restaurants[currentIndex] || restaurants[restaurants.length - 1];
+
+  // Format category string
+  const getCategoryString = (categories: Array<{ title: string }>) => {
+    return categories.map(cat => cat.title).join(', ');
+  };
+
+  // Format location string
+  const getLocationString = (location: Restaurant['location']) => {
+    if (location.displayAddress && location.displayAddress.length > 0) {
+      return location.displayAddress[0];
+    }
+    return `${location.city}, ${location.state}`;
+  };
+
+  // Calculate distance in miles
+  const getDistanceInMiles = (distanceMeters?: number) => {
+    if (!distanceMeters || distanceMeters === 0) return 0;
+    // Convert meters to miles
+    const miles = distanceMeters / 1609.34;
+    return Math.round(miles * 10) / 10; // 1 decimal place
+  };
 
   return (
     <SafeAreaView className="flex-1 items-center bg-primary flex-col">
       {/* Header above card */}
-      <View className= "justify-center items-center pt-5">
+      <View className="justify-center items-center pt-5">
         <Text className="text-accent text-4xl" style={{ fontFamily: 'montserrat-bold' }}>
-          {currentCard.location}
+          {getLocationString(currentCard.location)}
         </Text>
-        <Text className="text-secondary text-xl" style={{ fontFamily: 'montserrat-semibold'}}>
-          {currentCard.distance} mi away
+        <Text className="text-secondary text-xl" style={{ fontFamily: 'montserrat-semibold' }}>
+          {getDistanceInMiles(currentCard.distance)} mi away
         </Text>
       </View>
 
@@ -166,28 +244,29 @@ export default function DiscoverScreen() {
           ref={swiperRef}
           cards={restaurants}
           renderCard={(card) => (
-              <RestaurantCard
-                name={card.name}
-                rating={card.rating}
-                imageUrl={card.imageUrl}
-                category={card.category}
-                price={card.price}
-                location={card.location}
-                distance={card.distance}
-              />
+            <RestaurantCard
+              name={card?.name || 'Unknown Restaurant'}
+              rating={card?.rating || 0}
+              imageUrl={card?.imageUrl || card?.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}
+              category={card?.categories ? getCategoryString(card.categories) : 'Restaurant'}
+              price={card?.price || 'N/A'}
+              location={card?.location ? getLocationString(card.location) : 'Unknown'}
+              distance={getDistanceInMiles(card?.distance)}
+            />
           )}
           onSwipedRight={onSwipedRight}
           onSwipedLeft={onSwipedLeft}
-          stackSize={3}
-          stackSeparation={0}
+          stackSize={1}
+          stackSeparation={15}
           backgroundColor="transparent"
           verticalSwipe={false}
           horizontalSwipe={true}
+          cardIndex={currentIndex}
         />
         <View className="absolute bottom-0 gap-10 flex shadow-md flex-row">
-          <CrossButton restaurant={currentCard} onLike={() => swiperRef.current?.swipeRight()}></CrossButton>
+          <CrossButton restaurant={currentCard} onLike={() => swiperRef.current?.swipeLeft()}></CrossButton>
           <HeartButton restaurant={currentCard} onLike={() => swiperRef.current?.swipeRight()}></HeartButton>
-        </View>   
+        </View>
       </View>
     </SafeAreaView>
   );

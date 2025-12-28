@@ -1,11 +1,13 @@
 import { Text, View } from "@/components/Themed";
-import { useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { useState, useEffect } from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "../global.css";
 import Toast from 'react-native-toast-message';
 import { BaseToast, ErrorToast } from 'react-native-toast-message';
- 
+import { api } from "@/api/client";
+import { APP_CONFIG } from "@/constants/config";
+
 const CUISINES = [
   "Chinese",
   "Japanese",
@@ -35,10 +37,10 @@ const DIETARY_RESTRICTIONS = [
 ];
 
 const toastConfig = {
-  success: (props) => (
+  success: (props: any) => (
     <BaseToast
       {...props}
-      style={{ 
+      style={{
         backgroundColor: '#8C2F39',
         borderLeftWidth: 0,
       }}
@@ -50,9 +52,8 @@ const toastConfig = {
       }}
     />
   ),
-  
-  // You can define other types like 'error' as well
-  error: (props) => (
+
+  error: (props: any) => (
     <ErrorToast
       {...props}
       text1Style={{
@@ -64,52 +65,127 @@ const toastConfig = {
 };
 
 export default function profileScreen() {
-  const defaultSelectedItems = ["Chinese", "Vietnamese", "Italian", "Drinks", "New American", "Vegetarian"];
-  const [selected, setSelected] = useState<string[]>(defaultSelectedItems);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // Load preferences on mount
+  useEffect(() => {
+    loadPreferences();
+  }, []);
+
+  const loadPreferences = async () => {
+    try {
+      setLoading(true);
+      const preferences = await api.users.getPreferences(APP_CONFIG.defaultUserId);
+      
+      if (preferences && (preferences.cuisines || preferences.dietaryRestrictions)) {
+        const combined = [
+          ...(preferences.cuisines || []),
+          ...(preferences.dietaryRestrictions || []),
+        ];
+        setSelected(combined);
+        console.log('✅ Loaded preferences:', combined);
+      } else {
+        // Set defaults if no preferences found
+        const defaults = ["Chinese", "Vietnamese", "Italian", "Drinks", "New American", "Vegetarian"];
+        setSelected(defaults);
+        console.log('📝 Using default preferences');
+      }
+    } catch (err) {
+      console.error('❌ Failed to load preferences:', err);
+      // Use defaults on error
+      const defaults = ["Chinese", "Vietnamese", "Italian", "Drinks", "New American", "Vegetarian"];
+      setSelected(defaults);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to load preferences',
+        position: 'bottom',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const savePreferences = async (newSelected: string[]) => {
+    try {
+      setSaving(true);
+      
+      // Split into cuisines and dietary restrictions
+      const cuisines = newSelected.filter(item => CUISINES.includes(item));
+      const dietaryRestrictions = newSelected.filter(item => DIETARY_RESTRICTIONS.includes(item));
+
+      await api.users.updatePreferences(APP_CONFIG.defaultUserId, {
+        cuisines,
+        dietaryRestrictions,
+      });
+
+      console.log('✅ Saved preferences:', { cuisines, dietaryRestrictions });
+      
+      Toast.show({
+        type: 'success',
+        text1: 'Preferences updated',
+        position: 'bottom',
+      });
+    } catch (err) {
+      console.error('❌ Failed to save preferences:', err);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to save preferences',
+        position: 'bottom',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const toggleCuisine = (name: string) => {
-    let message = '';
-    
     setSelected((prev) => {
-        if (prev.includes(name)) {
-            message = `Preferences updated.`;
-            return prev.filter((c) => c !== name);
-        } else {
-            message = `Preferences updated.`;
-            return [...prev, name];
-        }
+      const newSelected = prev.includes(name)
+        ? prev.filter((c) => c !== name)
+        : [...prev, name];
+      
+      // Save to backend (debounced in a real app)
+      savePreferences(newSelected);
+      
+      return newSelected;
     });
+  };
 
-    // Show the Toast after state update (React Batches state updates, so this should run after the action)
-    Toast.show({
-        type: 'success', // or 'info'
-        text1: message,
-        position: 'bottom', // or 'top'
-    });
-};
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-primary items-center justify-center" edges={['top', 'bottom']}>
+        <ActivityIndicator size="large" color="#8C2F39" />
+        <Text className="text-accent text-xl mt-4" style={{ fontFamily: 'montserrat-semibold' }}>
+          Loading preferences...
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-primary" edges={['top', 'bottom']}>
-      <ScrollView 
-        style={{flex: 1}}
+      <ScrollView
+        style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
       >
-      <View className="w-full items-center mb-5">
+        <View className="w-full items-center mb-5">
           <Text className="text-4xl font-semibold text-accent my-5" style={{ fontFamily: 'montserrat-bold' }}>
-          Cuisine Preferences
+            Cuisine Preferences
           </Text>
           <View style={styles.grid}>
             {CUISINES.map((cuisine) => {
               const isSelected = selected.includes(cuisine);
               return (
                 <TouchableOpacity
-                style={[
-                  styles.cuisineButton,
-                  isSelected && styles.cuisineButtonSelected,
-                ]}
-                key={cuisine}
-                onPress={() => toggleCuisine(cuisine)}
+                  style={[
+                    styles.cuisineButton,
+                    isSelected && styles.cuisineButtonSelected,
+                  ]}
+                  key={cuisine}
+                  onPress={() => toggleCuisine(cuisine)}
+                  disabled={saving}
                 >
                   <Text
                     style={[
@@ -127,19 +203,20 @@ export default function profileScreen() {
 
         <View className="w-full items-center mb-20">
           <Text className="text-4xl font-semibold text-accent my-5" style={{ fontFamily: 'montserrat-bold' }}>
-          Dietary Restrictions
+            Dietary Restrictions
           </Text>
           <View style={styles.grid}>
             {DIETARY_RESTRICTIONS.map((restriction) => {
               const isSelected = selected.includes(restriction);
               return (
                 <TouchableOpacity
-                style={[
-                  styles.cuisineButton,
-                  isSelected && styles.cuisineButtonSelected,
-                ]}
-                key={restriction}
-                onPress={() => toggleCuisine(restriction)}
+                  style={[
+                    styles.cuisineButton,
+                    isSelected && styles.cuisineButtonSelected,
+                  ]}
+                  key={restriction}
+                  onPress={() => toggleCuisine(restriction)}
+                  disabled={saving}
                 >
                   <Text
                     style={[
@@ -154,14 +231,23 @@ export default function profileScreen() {
             })}
           </View>
         </View>
+
+        {saving && (
+          <View className="items-center mb-4">
+            <ActivityIndicator size="small" color="#8C2F39" />
+            <Text className="text-secondary mt-2" style={{ fontFamily: 'montserrat-regular' }}>
+              Saving...
+            </Text>
+          </View>
+        )}
       </ScrollView>
-      <Toast config={toastConfig}/>
+      <Toast config={toastConfig} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-    grid: {
+  grid: {
     marginTop: 10,
     width: "90%",
     flexDirection: "row",
